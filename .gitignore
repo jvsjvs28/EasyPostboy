@@ -1,1 +1,5 @@
 /bin/
+/postboy_debug.log
+/postboy_error.log
+/postboy_info.log
+/postboy_trace.log
