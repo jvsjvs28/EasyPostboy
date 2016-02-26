@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property name="USER_HOME" value="./" />
+  <!--appender name="filedebug" class="ch.qos.logback.core.rolling.RollingFileAppender"-->
+  <appender name="filedebug" class="ch.qos.logback.core.FileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>${USER_HOME}postboy_debug.log</File>
+    <append>false</append>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>debug</level>
+    </filter>
+  </appender>
+
+  <appender name="fileinfo" class="ch.qos.logback.core.FileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>${USER_HOME}postboy_info.log</File>
+    <append>false</append>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>info</level>
+    </filter>
+  </appender>
+
+  <appender name="filetrace" class="ch.qos.logback.core.FileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>${USER_HOME}postboy_trace.log</File>
+    <append>false</append>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>trace</level>
+    </filter>
+  </appender>
+
+  <appender name="fileerror" class="ch.qos.logback.core.FileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>${USER_HOME}postboy_error.log</File>
+    <append>false</append>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>error</level>
+    </filter>
+  </appender>
+
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <Target>System.out</Target>
+    <encoder>
+      <pattern>%m%n</pattern>
+    </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>error</level>
+    </filter>
+  </appender>
+
+  <root level="debug">
+    <appender-ref ref="filedebug"/>
+    <appender-ref ref="filetrace"/>
+    <appender-ref ref="fileinfo"/>
+    <appender-ref ref="fileerror"/>
+    <appender-ref ref="stdout"/>
+  </root>
+
+</configuration>
