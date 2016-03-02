@@ -51,5 +51,7 @@ public class Sets
 	public static final String [] IGNORE_KEYS ={
 			"*","fonttbl","colortbl","datastore","themedata"
 	};
+    public static final String TEMPLATE_PROPERTY_NAME = "Template file";
+    public static final String JSON_PROPERTY_NAME = "JSON file";
 	
 }

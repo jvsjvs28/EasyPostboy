@@ -63,6 +63,7 @@ public class ToolbarActions extends JToolBar  {
 			Memory.mainFrame.fileJSONNameField.setText(new JsonChooser(Memory.mainFrame.fileJSONNameField,JFileChooser.FILES_ONLY,
 					"Choose JSON file").getPath());
 			Memory.tagMapper.getJSONFromFile(Memory.mainFrame.fileJSONNameField.getText());
+			Memory.getEpProps().setProperty(Sets.JSON_PROPERTY_NAME,"" + Memory.mainFrame.fileJSONNameField.getText());
 		}
 	}
 	public class OpenTemplateFileAction extends AbstractAction {
@@ -80,6 +81,7 @@ public class ToolbarActions extends JToolBar  {
 			if (!"".equals(Memory.mainFrame.fileTemplateNameField.getText())){
 				Memory.rtfProcessor = new RtfTemplate(Memory.mainFrame.fileTemplateNameField.getText());
 			}
+			Memory.getEpProps().setProperty(Sets.TEMPLATE_PROPERTY_NAME,"" + Memory.mainFrame.fileTemplateNameField.getText());
 		}
 	}
 
@@ -104,6 +106,7 @@ public class ToolbarActions extends JToolBar  {
 			putValue(AbstractAction.SHORT_DESCRIPTION,"Exit");
 		}
 		public void actionPerformed(ActionEvent arg0) {
+			EasyPostboyApp.saveProps();
 			System.exit(0);
 		}
 	}

@@ -2,19 +2,13 @@ package com.samtrest.easy_postboy;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
-import java.sql.SQLException;
-import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -44,7 +38,7 @@ public class MainFrame extends JFrame {
 	JTextField fileTemplateNameField = new JTextField();
 	JTextField fileJSONNameField = new JTextField();
 
-	public MainFrame(String title) throws HeadlessException {
+	public MainFrame(String title,boolean isVisible) throws HeadlessException {
 		super(title);
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -54,6 +48,7 @@ public class MainFrame extends JFrame {
 		}
 		this.addWindowListener(new WindowAdapter()		{
 			public void windowClosing(WindowEvent arg0) {
+				EasyPostboyApp.saveProps();
 				System.exit(0);
 			}
 		});
@@ -247,7 +242,7 @@ public class MainFrame extends JFrame {
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,filesTextPane,sqlTagSplitPane);
 		content.add(mainSplitPane,BorderLayout.CENTER);
 		
-//		setVisible(true);
+		setVisible(isVisible);
 	}
 	public void message(String t){
 		JOptionPane.showMessageDialog(this,t);
