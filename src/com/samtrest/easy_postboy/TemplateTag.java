@@ -29,11 +29,17 @@ public class TemplateTag {
 		String str = "";
 		int curPos = 0,begPos = 0;
 		curPos = tag.indexOf("\\'", begPos);
-		while (curPos != -1){
-			int c = (Integer.parseInt("05"+tag.substring(curPos+2,curPos+4), 16)-16);
-			str += (char)c;
-			begPos += 4;
-			curPos = tag.indexOf('\\', begPos);
+		while (true){
+			if(curPos == -1){
+				str += tag.substring(begPos);
+				break;
+			}else{
+				str += tag.substring(begPos, curPos);
+				int c = (Integer.parseInt("05"+tag.substring(curPos+2,curPos+4), 16)-16);
+				str += (char)c;
+				begPos = curPos + 4;
+				curPos = tag.indexOf("\\'", begPos);
+			}
 		}
 		System.out.println(str);
 		return str;
