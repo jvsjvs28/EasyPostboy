@@ -1,15 +1,12 @@
 package com.samtrest.easy_postboy;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
+import java.io.File;
 import java.net.URL;
-import java.sql.SQLException;
-import java.util.Enumeration;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -21,8 +18,6 @@ import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
 import javax.swing.UIManager;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +74,8 @@ public class ToolbarActions extends JToolBar  {
 			Memory.mainFrame.fileTemplateNameField.setText(new RTFChooser(Memory.mainFrame.fileTemplateNameField,JFileChooser.FILES_ONLY,
 					"Choose RTF file").getPath());
 			if (!"".equals(Memory.mainFrame.fileTemplateNameField.getText())){
-				Memory.rtfProcessor = new RtfTemplate(Memory.mainFrame.fileTemplateNameField.getText());
+				Memory.rtfProcessor = new RtfTemplate(
+						               new File(Memory.mainFrame.fileTemplateNameField.getText()));
 			}
 			Memory.getEpProps().setProperty(Sets.TEMPLATE_PROPERTY_NAME,"" + Memory.mainFrame.fileTemplateNameField.getText());
 		}
@@ -174,7 +170,6 @@ public class ToolbarActions extends JToolBar  {
 	}
 
 	public class NewsAction extends AbstractAction {
-
 		private JDialog frame = new JDialog();
 		public NewsAction() {
 			putValue(AbstractAction.SMALL_ICON,UICommonUtil.createImageIcon("news.gif"));

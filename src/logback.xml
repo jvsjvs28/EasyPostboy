@@ -60,7 +60,7 @@
     </filter>
   </appender>
 
-  <root level="debug">
+  <root level="trace">
     <appender-ref ref="filedebug"/>
     <appender-ref ref="filetrace"/>
     <appender-ref ref="fileinfo"/>

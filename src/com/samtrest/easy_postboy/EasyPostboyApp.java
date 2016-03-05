@@ -16,21 +16,22 @@ public class EasyPostboyApp {
 	static  Logger log = LoggerFactory.getLogger(EasyPostboyApp.class );
 	File file;
 
-	public EasyPostboyApp() {
+	public EasyPostboyApp(boolean isVisible) {
 		super();
-		initiateApp();
+		initiateApp(isVisible);
 	}
 	public EasyPostboyApp(File file) {
 		super();
 		this.file = file;
-		initiateApp();
+		initiateApp(true);
 	}
 
-	private void initiateApp(){
-		Memory.mainFrame = new MainFrame("Easy Postboy",true);
+	private void initiateApp(boolean isVisible){
+		Memory.mainFrame = new MainFrame("Easy Postboy",isVisible);
 		initProps();
 		if (!"".equals(Memory.mainFrame.fileTemplateNameField.getText())){
-			Memory.rtfProcessor = new RtfTemplate(Memory.mainFrame.fileTemplateNameField.getText());
+			Memory.rtfProcessor = new RtfTemplate(
+					new File(Memory.mainFrame.fileTemplateNameField.getText()));
 		}
 		Memory.tagMapper = new TagMapper();
 		try {
@@ -48,9 +49,14 @@ public class EasyPostboyApp {
 	public static void main(String[] args) {
 		EasyPostboyApp ewApp = null;
 		if (args.length > 0){
-			ewApp = new EasyPostboyApp(new File(args[0]));
+			if ("-file".equals(args[0])){
+				new EasyPostboyApp(new File(args[1]));
+			}
+			if ("-frame".equals(args[0])){
+				new EasyPostboyApp("true".equalsIgnoreCase(args[1]));
+			}
 		}else{
-			ewApp = new EasyPostboyApp();
+			new EasyPostboyApp(false);
 		}
 	}
 

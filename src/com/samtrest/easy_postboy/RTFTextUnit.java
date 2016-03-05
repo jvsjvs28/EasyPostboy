@@ -2,8 +2,9 @@ package com.samtrest.easy_postboy;
 
 public class RTFTextUnit {
 	
-	int rowNum,offset;
-	String text;
+	private int rowNum,offset;
+	private String text;
+	
 	public RTFTextUnit(int rowNum, int offset, String text) {
 		super();
 		this.rowNum = rowNum;
