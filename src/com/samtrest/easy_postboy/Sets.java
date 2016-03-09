@@ -6,7 +6,7 @@ public class Sets
 {
 	public static final String POSTBOY_VERSION = "0.01.01";
 	public static final String WHAT_NEW = "";
-	public static final String JSON_NAME = "POSTBOY_JSON";
+	public static final String JSON_MAPPER_MAIN_TAGNAME = "POSTBOY_JSON";
 	public static final String JSON_ELEMENT = "ELEMENT";
 	public static final String JSON_TAG = "TAG";
 	public static final String JSON_TYPE = "TYPE";
@@ -14,6 +14,9 @@ public class Sets
 	public static final String JSON_SOURCES = "SOURCES";
 	public static final String JSON_VALUE = "VALUE";
 	public static final String JSON_PARAMETERS = "PARAMS";
+
+	public static final String JSON_DATA_MAIN_TAGNAME = "EP_DATA";
+	public static final String JSON_DATA_FILE_ID = "FILE_ID";
 
 	public static final String TAG_TYPE_FIELD = "FIELD";
 	public static final String TAG_TYPE_FIELD_IN_TABLE = "TABLE";

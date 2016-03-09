@@ -41,7 +41,6 @@ public class TemplateTag {
 				curPos = tag.indexOf("\\'", begPos);
 			}
 		}
-		System.out.println(str);
 		return str;
 	}
 }

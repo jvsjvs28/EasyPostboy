@@ -9,13 +9,14 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RtfTemplate {
 	List<String> lines;
 	List<TemplateTag> tags;
-	StringBuffer txt;
+	String template;
 	static  Logger log = LoggerFactory.getLogger(RtfTemplate.class );
 	int offset=0, rowNumber=0;
 
@@ -24,7 +25,7 @@ public class RtfTemplate {
 			Scanner sc = new Scanner(file);
 			populateLines(sc);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			log.error("FileNotFoundException {}\n{}",UICommonUtil.formatMessage(e));
 		}
 	}
 	public RtfTemplate(String templateText){
@@ -34,15 +35,16 @@ public class RtfTemplate {
 	
 	private void populateLines(Scanner sc){
 		lines = new ArrayList<String>();
-		txt = new StringBuffer();
+		StringBuffer txt = new StringBuffer();
 		while (sc.hasNextLine()) {
 			String string = sc.nextLine();
 			lines.add(string);
 			txt.append(string);
 		}
 		sc.close();
+		template = txt.toString();
 		populateTagsFromTemplate();		
-		if (log.isDebugEnabled()){
+		if (log.isTraceEnabled()){
 			printTags();
 		}
 	}
@@ -72,9 +74,11 @@ public class RtfTemplate {
 		if (offset == -1){
 			return null;
 		}
+		offset++;
 		tagStr = Sets.BEGIN_TAG_DELIMITER;
 		tag.getUnits().add(new RTFTextUnit(rowNumber,offset,Sets.BEGIN_TAG_DELIMITER));
-		currPosition = offset + Sets.BEGIN_TAG_DELIMITER.length()+1;
+		offset += Sets.BEGIN_TAG_DELIMITER.length();
+		currPosition = offset;
 
 		for (int i = rowNumber; i < lines.size(); i++) {
 			line = lines.get(i).substring(currPosition);
@@ -93,19 +97,20 @@ public class RtfTemplate {
 						(firstToken.startsWith("\\tab") || 
 						 firstToken.startsWith("\\'"))){
 					tagStr += firstToken;
-					tag.getUnits().add(new RTFTextUnit(i,currPosition,firstToken));
+					tag.getUnits().add(new RTFTextUnit(i,offset,firstToken));
 				}
 				currPosition += firstToken.length();
 				if (firstToken.endsWith(Sets.END_TAG_DELIMITER)){
 					break;
 				}
+				offset += token.length();
 			}
 			if (firstToken.endsWith(Sets.END_TAG_DELIMITER)){
 				break;
 			}
 			currPosition = 0;
+			offset = 0;
 		}
-		offset = currPosition;
 		tag.setTag(tagStr);
 		return tag;
 	}
@@ -117,9 +122,31 @@ public class RtfTemplate {
 			tags.add(tag);
 			rowNumber = tag.getUnits().get(tag.getUnits().size()-1).getRowNum();
 			offset = tag.getUnits().get(tag.getUnits().size()-1).getOffset()+1;
-			log.trace("Line: {}, offset:{}, Tag: {}",rowNumber,offset,tag.getTag());
 			tag = getNextTag(offset, rowNumber);
 		}
+	}
+	
+	public ArrayList<String> checkTemplateForMapper(){
+		ArrayList<String> errorTags = new ArrayList<String>();
+		
+		for (TemplateTag tag : tags){
+			if (!Memory.tagMapper.getJson().containsKey(tag.getTag().toString())){
+				errorTags.add(tag.toString());
+				log.debug(tag.toString());
+			}
+		}
+		return errorTags;
+	}
+	public ArrayList<String> checkTemplateForData(){
+		ArrayList<String> errorTags = new ArrayList<String>();
+		
+		for (TemplateTag tag : tags){
+			if (!Memory.tagMapper.getJson().containsKey(tag.getTag().toString())){
+				errorTags.add(tag.toString());
+				log.debug(tag.toString());
+			}
+		}
+		return errorTags;
 	}
 
 	public List<String> getLines() {
@@ -138,11 +165,10 @@ public class RtfTemplate {
 		this.tags = tags;
 	}
 
-	public StringBuffer getTxt() {
-		return txt;
+	public String getTemplate() {
+		return template;
 	}
-
-	public void setTxt(StringBuffer txt) {
-		this.txt = txt;
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 }

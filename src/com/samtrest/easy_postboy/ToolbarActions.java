@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class ToolbarActions extends JToolBar  {
 	static  Logger log = LoggerFactory.getLogger(ToolbarActions.class );
 	OpenTemplateFileAction openTemplateFileAction = new OpenTemplateFileAction();
-	OpenDefineFile openDefineFileAction = new OpenDefineFile();
+	OpenMapperFile openDefineFileAction = new OpenMapperFile();
 	QuitAction quitAction = new QuitAction();
 	AboutAction aboutAction = new AboutAction();
 	OnlineAction onlineAction = new OnlineAction();
@@ -45,9 +45,9 @@ public class ToolbarActions extends JToolBar  {
 			new Login();
 		}
 	}
-	public class OpenDefineFile extends AbstractAction {
+	public class OpenMapperFile extends AbstractAction {
 
-		public OpenDefineFile() {
+		public OpenMapperFile() {
 			putValue(AbstractAction.SMALL_ICON,UICommonUtil.createImageIcon("define_file.gif"));
 			putValue(AbstractAction.SHORT_DESCRIPTION,"Open definition file");
 		}
@@ -56,8 +56,14 @@ public class ToolbarActions extends JToolBar  {
 			if (!isEnabled())
 				return;
 			Memory.mainFrame.fileJSONNameField.setText(new JsonChooser(Memory.mainFrame.fileJSONNameField,JFileChooser.FILES_ONLY,
-					"Choose JSON file").getPath());
-			Memory.tagMapper.getJSONFromFile(Memory.mainFrame.fileJSONNameField.getText());
+					"Choose mapping json file").getPath());
+			Memory.tagMapper = new TagMapper();
+			Memory.tagMapper.readJsonFromFile(new File(Memory.mainFrame.fileJSONNameField.getText()));
+			Memory.tagMapper.parseJson();
+
+			if (log.isTraceEnabled()){
+				Memory.tagMapper.printJson();
+			}
 			Memory.getEpProps().setProperty(Sets.JSON_PROPERTY_NAME,"" + Memory.mainFrame.fileJSONNameField.getText());
 		}
 	}
@@ -257,7 +263,7 @@ public class ToolbarActions extends JToolBar  {
 		return openTemplateFileAction;
 	}
 
-	public OpenDefineFile getOpenDefineFile() {
+	public OpenMapperFile getOpenDefineFile() {
 		return openDefineFileAction;
 	}
 

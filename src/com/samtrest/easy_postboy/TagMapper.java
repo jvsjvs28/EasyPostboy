@@ -27,22 +27,22 @@ public class TagMapper {
 		json = new JSONObject();
 	}
 
-	public static JSONObject getJSONObject(Object key,Object value){
+	public static JSONObject createJSONObject(Object key,Object value){
 		JSONObject jSON = new JSONObject();
 		jSON.put(key, value);
 		return jSON;
 	}
-	
-	public void printJSON(){
-		JSONArray array = (JSONArray) json.get(Sets.JSON_NAME);
+
+	public void printJson(){
+		JSONArray array = (JSONArray) json.get(Sets.JSON_MAPPER_MAIN_TAGNAME);
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject element = (JSONObject)((JSONObject)array.get(i)).get(Sets.JSON_ELEMENT);
-			log.debug(element.toJSONString());
+			log.trace(element.toJSONString());
 		}
 	}
 
-	public void parseJSON(){
-		JSONArray array = (JSONArray) json.get(Sets.JSON_NAME);
+	public void parseJson(){
+		JSONArray array = (JSONArray) json.get(Sets.JSON_MAPPER_MAIN_TAGNAME);
 		Memory.setJsonElements(new TagObject[array.size()]);
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject element = (JSONObject)((JSONObject)array.get(i)).get(Sets.JSON_ELEMENT); 
@@ -57,22 +57,28 @@ public class TagMapper {
 			str+=Memory.getJsonElements()[i].toJsonString();
 		}
 		str += "]";
-//		System.out.println(str);
 	}
 
-	public void getJSONFromFile(String filename){
-		JSONParser parser = new JSONParser();
-		String jsonFileName = filename;
-		if (jsonFileName == null || "".equals(jsonFileName)){
-			jsonFileName = Sets.JSON_FILENAME;
+	public void readJsonFromFile(File file){
+		File theFile = file;
+		if (theFile == null){
+			if ("".equals(Memory.mainFrame.fileJSONNameField.getText())){
+				Memory.mainFrame.fileJSONNameField.setText(Sets.JSON_FILENAME);
+			}			try {
+				theFile = new File(Memory.mainFrame.fileJSONNameField.getText());
+			}catch (Exception e){
+				log.error("Exception {}\n{}",UICommonUtil.formatMessage(e));
+				Memory.tagMapper.populateDefaultMapperJson();
+				return;
+			}
 		}
+		JSONParser parser = new JSONParser();
 		try {
-			File fileDir = new File(jsonFileName);
 			StringBuffer sb = new StringBuffer();
 
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(
-							new FileInputStream(fileDir), "UTF8"));
+							new FileInputStream(theFile), "UTF8"));
 			String str;
 			while ((str = in.readLine()) != null) {
 				sb.append(str);
@@ -88,7 +94,7 @@ public class TagMapper {
 		}
 	}
 
-	public void putDefaultJSON(){
+	public void populateDefaultMapperJson(){
 		JSONArray array = new JSONArray();
 		JSONObject element = null,subElement = null, param = null;
 		JSONArray  internalDefArray = null,paramsArray = null;;
@@ -102,7 +108,7 @@ public class TagMapper {
 		subElement.put(Sets.JSON_VALUE,"rm_clients");
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);			
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
 		element =  new JSONObject();
 		element.put(Sets.JSON_TAG,"<<שם פרטי לקוח>>");
@@ -113,7 +119,7 @@ public class TagMapper {
 		subElement.put(Sets.JSON_VALUE,"rm_clients");
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
 		element =  new JSONObject();
 		element.put(Sets.JSON_TAG,"<<שם משפחה לקוח>>");
@@ -124,7 +130,7 @@ public class TagMapper {
 		subElement.put(Sets.JSON_VALUE,"rm_clients");
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
 		element =  new JSONObject();
 		element.put(Sets.JSON_TAG,"<<שם לקוח>>");
@@ -149,7 +155,7 @@ public class TagMapper {
 		subElement.put(Sets.JSON_VALUE,"CLIENT_FIRST_NAME + \" \"+ CLIENT_LAST_NAME");
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
 		element =  new JSONObject();
 		element.put(Sets.JSON_TAG,"<<תאריך נוכחי>>");
@@ -159,7 +165,7 @@ public class TagMapper {
 		subElement.put(Sets.JSON_TYPE,Sets.TAG_TYPE_SYSDATE);
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
 		element =  new JSONObject();
 		element.put(Sets.JSON_TAG,"<<תאריך פניה>>");
@@ -169,7 +175,7 @@ public class TagMapper {
 		subElement.put(Sets.JSON_TYPE,Sets.TAG_TYPE_SYSDATE);
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
 		element =  new JSONObject();
 		element.put(Sets.JSON_TAG,"<<חוזה>>");
@@ -180,7 +186,7 @@ public class TagMapper {
 		subElement.put(Sets.JSON_VALUE,"rm_contract_acc");
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
 		element =  new JSONObject();
 		element.put(Sets.JSON_TAG,"<<כתובת שורה1>>");
@@ -197,7 +203,7 @@ public class TagMapper {
 		subElement.put(Sets.JSON_PARAMETERS,paramsArray);
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
 		element =  new JSONObject();
 		element.put(Sets.JSON_TAG,"<<כתובת שורה2>>");
@@ -214,9 +220,9 @@ public class TagMapper {
 		subElement.put(Sets.JSON_PARAMETERS,paramsArray);
 		internalDefArray.add(subElement);
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
-		array.add(TagMapper.getJSONObject(Sets.JSON_ELEMENT, element));
+		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
-		json.put(Sets.JSON_NAME,array);
+		json.put(Sets.JSON_MAPPER_MAIN_TAGNAME,array);
 
 		//		System.out.println(json.toJSONString());
 
@@ -238,12 +244,6 @@ public class TagMapper {
 		}catch (IOException e) {
 			log.error("IOException {}\n{}",UICommonUtil.formatMessage(e));
 		}
-
-	}
-
-	public static void main(String[] args) {
-		TagMapper tm = new TagMapper();
-		tm.putDefaultJSON();
 	}
 
 	public JSONObject getJson() {

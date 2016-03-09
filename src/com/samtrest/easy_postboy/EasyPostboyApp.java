@@ -6,10 +6,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Properties;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.core.read.ListAppender;
 
 public class EasyPostboyApp {
 
@@ -29,37 +36,99 @@ public class EasyPostboyApp {
 	private void initiateApp(boolean isVisible){
 		Memory.mainFrame = new MainFrame("Easy Postboy",isVisible);
 		initProps();
-		if (!"".equals(Memory.mainFrame.fileTemplateNameField.getText())){
-			Memory.rtfProcessor = new RtfTemplate(
-					new File(Memory.mainFrame.fileTemplateNameField.getText()));
-		}
-		Memory.tagMapper = new TagMapper();
-		try {
-			Memory.tagMapper.getJSONFromFile("");
-			Memory.tagMapper.parseJSON();
-
-			if (log.isDebugEnabled()){
-				Memory.tagMapper.printJSON();
-			}
-		}catch (Exception e){
-			Memory.tagMapper.putDefaultJSON();
-		}
 	}
 
+	public String[] runEasyPostboy(String template, String mapperJson,
+			                   String dataJson){
+		ArrayList<String> errors = null;
+		JSONParser parser = new JSONParser();
+		
+		Memory.rtfProcessor = new RtfTemplate(template);
+		Memory.tagMapper = new TagMapper();
+		try {
+			Memory.tagMapper.setJson((JSONObject)parser.parse(mapperJson));
+		} catch (ParseException e) {
+			log.error("Map json ParseException {}\n{}",UICommonUtil.formatMessage(e));
+			return null;
+		}
+		errors = Memory.rtfProcessor.checkTemplateForMapper();
+		
+		for (String error : errors) {
+			log.error("Tag {} not found",error);
+		}
+		if (errors.size() != 0){
+			System.out.println("Errors found");
+			return null;
+		}
+		try {
+			Memory.data = (JSONObject)parser.parse(dataJson);
+		} catch (ParseException e) {
+			log.error("Data json ParseException {}\n{}",UICommonUtil.formatMessage(e));
+			return null;
+		}
+		errors = Memory.rtfProcessor.checkTemplateForData();
+		
+		for (String error : errors) {
+			log.error("Tag {} not found",error);
+		}
+		if (errors.size() != 0){
+			System.out.println("Errors found");
+			return null;
+		}
+			
+		return createDocs();
+	}
+	
+	private String[] createDocs(){
+		String [] resultRtfs = null;
+		ArrayList<String> docs = new ArrayList<String>();		
+		
+		return resultRtfs;
+	}
+	
 	public static void main(String[] args) {
 		EasyPostboyApp ewApp = null;
 		if (args.length > 0){
-			if ("-file".equals(args[0])){
-				new EasyPostboyApp(new File(args[1]));
-			}
-			if ("-frame".equals(args[0])){
-				new EasyPostboyApp("true".equalsIgnoreCase(args[1]));
+			for (int i = 0; i < args.length; i++) {
+				if ("-file".equals(args[i])){
+					ewApp = new EasyPostboyApp(new File(args[i+1]));
+				}else if ("-frame".equals(args[i])){
+					ewApp = new EasyPostboyApp("true".equalsIgnoreCase(args[i+1]));
+				}else if("-dir".equals(args[i])){
+					Memory.setOutDir(args[i+1]);
+				}				
+				i++;
 			}
 		}else{
-			new EasyPostboyApp(false);
+			ewApp = new EasyPostboyApp(true);
+		}
+		if (!"".equals(Memory.getOutDir())){
+			if (!"".equals(Memory.mainFrame.fileTemplateNameField.getText())){
+				Memory.rtfProcessor = new RtfTemplate(
+						new File(Memory.mainFrame.fileTemplateNameField.getText()));
+				Memory.tagMapper = new TagMapper();
+				Memory.tagMapper.readJsonFromFile(null);
+
+				String [] docs = ewApp.runEasyPostboy(Memory.rtfProcessor.getTemplate(), 
+							             Memory.tagMapper.getJson().toJSONString(),
+							             "");
+			    createFiles(docs);
+			}
 		}
 	}
 
+	public static void createFiles(String [] docs){
+		for (int i = 0; i < docs.length; i++) {
+			String fileName = "ep_"+(i+1)+".doc";
+			try ( PrintWriter out = new PrintWriter( fileName ) ){
+			    out.println( docs[i] );
+			} catch (Exception e) {
+				log.error("File {} Exception {}\n{}",fileName,UICommonUtil.formatMessage(e));
+			}
+		}
+		
+	}
+	
 	public static void saveProps(){
 		FileOutputStream out;
 		try {
@@ -81,8 +150,8 @@ public class EasyPostboyApp {
 			inp = new FileInputStream("epProperties");
 			Memory.getEpProps().load(inp);
 			inp.close();
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e){
+			log.error("File \"epProperties\" Not Found Exception {}\n{}",UICommonUtil.formatMessage(e));
 		} catch (IOException e) {
 			log.error("IOException {}",UICommonUtil.formatMessage(e));
 		}
