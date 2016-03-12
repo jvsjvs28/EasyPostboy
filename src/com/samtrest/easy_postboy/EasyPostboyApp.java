@@ -23,6 +23,9 @@ public class EasyPostboyApp {
 	static  Logger log = LoggerFactory.getLogger(EasyPostboyApp.class );
 	File file;
 
+	public EasyPostboyApp() {
+		super();
+	}
 	public EasyPostboyApp(boolean isVisible) {
 		super();
 		initiateApp(isVisible);
@@ -38,21 +41,15 @@ public class EasyPostboyApp {
 		initProps();
 	}
 
-	public String[] runEasyPostboy(String template, String mapperJson,
-			                   String dataJson){
+	public String[] runEasyPostboyStr(String template, String mapperJson,
+			String dataJson){
 		ArrayList<String> errors = null;
 		JSONParser parser = new JSONParser();
-		
+
 		Memory.rtfProcessor = new RtfTemplate(template);
-		Memory.tagMapper = new TagMapper();
-		try {
-			Memory.tagMapper.setJson((JSONObject)parser.parse(mapperJson));
-		} catch (ParseException e) {
-			log.error("Map json ParseException {}\n{}",UICommonUtil.formatMessage(e));
-			return null;
-		}
+		Memory.tagMapper = new TagMapper(mapperJson);
+
 		errors = Memory.rtfProcessor.checkTemplateForMapper();
-		
 		for (String error : errors) {
 			log.error("Tag {} not found",error);
 		}
@@ -61,13 +58,13 @@ public class EasyPostboyApp {
 			return null;
 		}
 		try {
-			Memory.data = (JSONObject)parser.parse(dataJson);
+			Memory.dataJson = (JSONObject)parser.parse(dataJson);
 		} catch (ParseException e) {
 			log.error("Data json ParseException {}\n{}",UICommonUtil.formatMessage(e));
 			return null;
 		}
 		errors = Memory.rtfProcessor.checkTemplateForData();
-		
+
 		for (String error : errors) {
 			log.error("Tag {} not found",error);
 		}
@@ -75,45 +72,55 @@ public class EasyPostboyApp {
 			System.out.println("Errors found");
 			return null;
 		}
-			
+
 		return createDocs();
 	}
-	
+
 	private String[] createDocs(){
 		String [] resultRtfs = null;
 		ArrayList<String> docs = new ArrayList<String>();		
-		
+
 		return resultRtfs;
 	}
-	
+
 	public static void main(String[] args) {
 		EasyPostboyApp ewApp = null;
 		if (args.length > 0){
 			for (int i = 0; i < args.length; i++) {
-				if ("-file".equals(args[i])){
-					ewApp = new EasyPostboyApp(new File(args[i+1]));
+				if ("-tag-file".equals(args[i])){
+					Memory.tagMapperJsonFile = new File(args[i+1]);
+				}else if ("-data-file".equals(args[i])){
+					Memory.dataJsonFile = new File(args[i+1]);
+				}else if ("-template-file".equals(args[i])){
+					Memory.templateFile = new File(args[i+1]);
 				}else if ("-frame".equals(args[i])){
 					ewApp = new EasyPostboyApp("true".equalsIgnoreCase(args[i+1]));
-				}else if("-dir".equals(args[i])){
-					Memory.setOutDir(args[i+1]);
+				}else if("-out-dir".equals(args[i])){
+					Memory.outDir = args[i+1];
 				}				
 				i++;
+			}
+			if (Memory.tagMapperJsonFile != null){
+				Memory.mainFrame.tagMapperFilenameField.setText(Memory.tagMapperJsonFile.getAbsolutePath());
+			}
+			if (Memory.templateFile != null){
+				Memory.mainFrame.fileTemplateNameField.setText(Memory.tagMapperJsonFile.getAbsolutePath());
 			}
 		}else{
 			ewApp = new EasyPostboyApp(true);
 		}
-		if (!"".equals(Memory.getOutDir())){
-			if (!"".equals(Memory.mainFrame.fileTemplateNameField.getText())){
-				Memory.rtfProcessor = new RtfTemplate(
-						new File(Memory.mainFrame.fileTemplateNameField.getText()));
-				Memory.tagMapper = new TagMapper();
-				Memory.tagMapper.readJsonFromFile(null);
 
-				String [] docs = ewApp.runEasyPostboy(Memory.rtfProcessor.getTemplate(), 
-							             Memory.tagMapper.getJson().toJSONString(),
-							             "");
-			    createFiles(docs);
-			}
+		if (Memory.templateFile != null){
+			Memory.rtfProcessor = new RtfTemplate(Memory.templateFile);
+		}
+
+		Memory.tagMapper = new TagMapper(Memory.tagMapperJsonFile);
+
+		String [] docs = ewApp.runEasyPostboyStr(Memory.rtfProcessor.getTemplate(), 
+				Memory.tagMapper.getTagMapperJson().toJSONString(),
+				"");
+		if (docs != null){
+			createFiles(docs);
 		}
 	}
 
@@ -121,14 +128,14 @@ public class EasyPostboyApp {
 		for (int i = 0; i < docs.length; i++) {
 			String fileName = "ep_"+(i+1)+".doc";
 			try ( PrintWriter out = new PrintWriter( fileName ) ){
-			    out.println( docs[i] );
+				out.println( docs[i] );
 			} catch (Exception e) {
 				log.error("File {} Exception {}\n{}",fileName,UICommonUtil.formatMessage(e));
 			}
 		}
-		
+
 	}
-	
+
 	public static void saveProps(){
 		FileOutputStream out;
 		try {
@@ -157,15 +164,20 @@ public class EasyPostboyApp {
 		}
 		Memory.getEpProps().setProperty("VER",Sets.POSTBOY_VERSION);
 
-		if (Memory.getEpProps().getProperty(Sets.TEMPLATE_PROPERTY_NAME) == null){
-			Memory.getEpProps().setProperty(Sets.TEMPLATE_PROPERTY_NAME,"");
+		if (Memory.getEpProps().getProperty(Sets.TEMPLATE_FILE_PROPERTY_NAME) == null){
+			Memory.getEpProps().setProperty(Sets.TEMPLATE_FILE_PROPERTY_NAME,"");
 		}
-		Memory.mainFrame.fileTemplateNameField.setText((String)Memory.getEpProps().get(Sets.TEMPLATE_PROPERTY_NAME));
+		Memory.mainFrame.fileTemplateNameField.setText((String)Memory.getEpProps().get(Sets.TEMPLATE_FILE_PROPERTY_NAME));
 
-		if (Memory.getEpProps().getProperty(Sets.JSON_PROPERTY_NAME) == null){
-			Memory.getEpProps().setProperty(Sets.JSON_PROPERTY_NAME,"");
+		if (Memory.getEpProps().getProperty(Sets.MAP_FILE_PROPERTY_NAME) == null){
+			Memory.getEpProps().setProperty(Sets.MAP_FILE_PROPERTY_NAME,"");
 		}
-		Memory.mainFrame.fileJSONNameField.setText((String)Memory.getEpProps().get(Sets.JSON_PROPERTY_NAME));
+		Memory.mainFrame.tagMapperFilenameField.setText((String)Memory.getEpProps().get(Sets.MAP_FILE_PROPERTY_NAME));
+		
+		if (Memory.getEpProps().getProperty(Sets.DATA_FILE_PROPERTY_NAME) == null){
+			Memory.getEpProps().setProperty(Sets.DATA_FILE_PROPERTY_NAME,"");
+		}
+		Memory.mainFrame.dataFilenameField.setText((String)Memory.getEpProps().get(Sets.DATA_FILE_PROPERTY_NAME));
 	}
 
 }

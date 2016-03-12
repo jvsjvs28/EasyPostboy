@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 public class RtfTemplate {
 	List<String> lines;
 	List<TemplateTag> tags;
-	String template;
 	static  Logger log = LoggerFactory.getLogger(RtfTemplate.class );
 	int offset=0, rowNumber=0;
-
+	String template;
+	
 	public RtfTemplate(File file){
 		try {
 			Scanner sc = new Scanner(file);
@@ -130,7 +130,7 @@ public class RtfTemplate {
 		ArrayList<String> errorTags = new ArrayList<String>();
 		
 		for (TemplateTag tag : tags){
-			if (!Memory.tagMapper.getJson().containsKey(tag.getTag().toString())){
+			if (!Memory.tagMapper.getTagMapperJson().containsKey(tag.getTag().toString())){
 				errorTags.add(tag.toString());
 				log.debug(tag.toString());
 			}
@@ -141,7 +141,7 @@ public class RtfTemplate {
 		ArrayList<String> errorTags = new ArrayList<String>();
 		
 		for (TemplateTag tag : tags){
-			if (!Memory.tagMapper.getJson().containsKey(tag.getTag().toString())){
+			if (!Memory.tagMapper.getTagMapperJson().containsKey(tag.getTag().toString())){
 				errorTags.add(tag.toString());
 				log.debug(tag.toString());
 			}
@@ -164,7 +164,6 @@ public class RtfTemplate {
 	public void setTags(List<TemplateTag> tags) {
 		this.tags = tags;
 	}
-
 	public String getTemplate() {
 		return template;
 	}

@@ -1,5 +1,6 @@
 package com.samtrest.easy_postboy;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.Properties;
 
@@ -16,14 +17,20 @@ public class Memory {
     private static DBConnection dbConnection;
     private static Properties epProps;
 	private static boolean hsqldbJARexists = false;
-	private static String outDir;
-
 	public static MainFrame mainFrame;
+
 	public static TagMapper tagMapper;
     public static RtfTemplate rtfProcessor;
-    public static JSONObject data;
-	public static byte [] bytes;
+    
+    public static JSONObject dataJson;
+    
+    public static File templateFile;
+    public static File dataJsonFile;
+    public static File tagMapperJsonFile;
 
+    public static String outDir;
+    
+	public static byte [] bytes;
     public static int [] sD = new int[3],hD = new int[3],dbD = new int[3];
     public static String sK,hK,dbK,dbVer;
     public static String dmn,hst,ip;
@@ -123,11 +130,5 @@ public class Memory {
 	}
 	public static void setHsqldbJARexists(boolean hsqldbJARexists) {
 		Memory.hsqldbJARexists = hsqldbJARexists;
-	}
-	public static String getOutDir() {
-		return outDir;
-	}
-	public static void setOutDir(String outDir) {
-		Memory.outDir = outDir;
 	}
 }

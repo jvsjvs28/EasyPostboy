@@ -1,7 +1,6 @@
 #---- Postboy Properties ----
-#Mon Jan 25 21:34:43 IST 2016
-port=1521
-hostname=localhost
-dbname=orcl.home
-ODA_REPOS_TYPE=Oracle
-username=oda_metro
+#Sat Mar 12 23:19:10 IST 2016
+Template\ file=C\:\\Users\\yuri.slutsky\\git\\EasyPostboy\\templates\\template.rtf
+Data\ file=
+VER=0.01.01
+Mapping\ file=C\:\\Users\\yuri.slutsky\\git\\EasyPostboy\\ep.json

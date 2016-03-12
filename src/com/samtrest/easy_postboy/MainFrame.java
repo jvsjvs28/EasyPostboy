@@ -33,10 +33,11 @@ import org.slf4j.LoggerFactory;
 public class MainFrame extends JFrame {
 	static  Logger log = LoggerFactory.getLogger(MainFrame.class );
 	private ToolbarActions verticalToolBar = new ToolbarActions();
-	private JMenuItem openFileMenItem,openDefFileMenItem,logonToDBMenItem,checkTemplateMenItem,
-	createTargetFilesMenItem,copyClipBoardMenuItem,infoMenuItem,quitMenuItem;
+	private JMenuItem openTemplateFileMenItem,openMappingFileMenItem,openDataFileMenItem,checkTemplateMenItem,
+	logonToDBMenItem,createTargetFilesMenItem,copyClipBoardMenuItem,infoMenuItem,quitMenuItem;
 	JTextField fileTemplateNameField = new JTextField();
-	JTextField fileJSONNameField = new JTextField();
+	JTextField tagMapperFilenameField = new JTextField();
+	JTextField dataFilenameField = new JTextField();
 
 	public MainFrame(String title,boolean isVisible) throws HeadlessException {
 		super(title);
@@ -82,18 +83,25 @@ public class MainFrame extends JFrame {
 				verticalToolBar.getLogonToDBAction().actionPerformed(arg0);
 			}
 		});	
-		openFileMenItem = new JMenuItem(verticalToolBar.getOpenFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
-		openFileMenItem.setEnabled(true);
-		openFileMenItem.addActionListener(new ActionListener(){
+		openTemplateFileMenItem = new JMenuItem(verticalToolBar.getOpenFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		openTemplateFileMenItem.setEnabled(true);
+		openTemplateFileMenItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				verticalToolBar.getOpenFileAction().actionPerformed(arg0);
 			}
 		});	
-		openDefFileMenItem = new JMenuItem(verticalToolBar.getOpenDefineFile().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
-		openDefFileMenItem.setEnabled(true);
-		openDefFileMenItem.addActionListener(new ActionListener(){
+		openMappingFileMenItem = new JMenuItem(verticalToolBar.getOpenDefineFile().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		openMappingFileMenItem.setEnabled(true);
+		openMappingFileMenItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				verticalToolBar.getOpenDefineFile().actionPerformed(arg0);
+			}
+		});	
+		openDataFileMenItem = new JMenuItem(verticalToolBar.getOpenDataFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		openDataFileMenItem.setEnabled(true);
+		openDataFileMenItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				verticalToolBar.getOpenDataFileAction().actionPerformed(arg0);
 			}
 		});	
 		quitMenuItem = new JMenuItem(verticalToolBar.getQuitAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
@@ -105,8 +113,9 @@ public class MainFrame extends JFrame {
 		});	
 
 		fileMenu.add(logonToDBMenItem);
-		fileMenu.add(openDefFileMenItem);
-		fileMenu.add(openFileMenItem);
+		fileMenu.add(openMappingFileMenItem);
+		fileMenu.add(openTemplateFileMenItem);
+		fileMenu.add(openDataFileMenItem);
 		fileMenu.addSeparator();
 		fileMenu.add(quitMenuItem);
 
@@ -190,54 +199,78 @@ public class MainFrame extends JFrame {
 				BorderFactory.createTitledBorder(
 						"Definition files"),
 				BorderFactory.createEmptyBorder(2,2,2,2)));
-		filesTextPane.setPreferredSize(new Dimension(900,80));
+		filesTextPane.setPreferredSize(new Dimension(900,100));
 		
-		JTextPane fileRTFTextPane = new JTextPane();
-		fileRTFTextPane.setPreferredSize(new Dimension(900,25));
-		fileRTFTextPane.setLayout(new BorderLayout());
-		JLabel RTFfileNameLabel = new JLabel("RTF File:",JLabel.TRAILING);
-		RTFfileNameLabel.setAlignmentY(10);
-		RTFfileNameLabel.setLabelFor(fileTemplateNameField);
+		JTextPane fileTemplatePane = new JTextPane();
+		fileTemplatePane.setPreferredSize(new Dimension(900,25));
+		fileTemplatePane.setLayout(new BorderLayout());
+		JLabel TemplateFileNameLabel = new JLabel("Template File(rtf):",JLabel.TRAILING);
+		TemplateFileNameLabel.setAlignmentY(10);
+		TemplateFileNameLabel.setLabelFor(fileTemplateNameField);
 		fileTemplateNameField.setPreferredSize(new Dimension(500,20));
 //		fileTemplateNameField.setMinimumSize(new Dimension(100,50));		
 		fileTemplateNameField.setEditable(false);
 
-		fileRTFTextPane.add(fileTemplateNameField,BorderLayout.CENTER);
+		fileTemplatePane.add(fileTemplateNameField,BorderLayout.CENTER);
 
-		JButton openRTFFileButton = new JButton(verticalToolBar.getOpenFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
-		openRTFFileButton.setPreferredSize(dim);
-		openRTFFileButton.addActionListener(new ActionListener(){
+		JButton openTemplateFileButton = new JButton(verticalToolBar.getOpenFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		openTemplateFileButton.setPreferredSize(dim);
+		openTemplateFileButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				verticalToolBar.getOpenFileAction().actionPerformed(e);
 			}
 		}
 				);
-		fileRTFTextPane.add(openRTFFileButton,BorderLayout.EAST);
-		fileRTFTextPane.add(RTFfileNameLabel,BorderLayout.WEST);
-		filesTextPane.add(fileRTFTextPane,BorderLayout.NORTH);
-
-		JTextPane fileJSONPane = new JTextPane();
-		fileJSONPane.setLayout(new BorderLayout());
-		fileJSONPane.setPreferredSize(new Dimension(900,25));
-		JLabel JSONfileNameLabel = new JLabel("JSON File:",JLabel.TRAILING);
-		JSONfileNameLabel.setLabelFor(fileJSONNameField);
-		fileJSONNameField.setPreferredSize(new Dimension(500,20));
-//		fileJSONNameField.setMinimumSize(new Dimension(100,50));
-		fileJSONNameField.setEditable(false);
+		fileTemplatePane.add(openTemplateFileButton,BorderLayout.EAST);
+		fileTemplatePane.add(TemplateFileNameLabel,BorderLayout.WEST);
 		
-		fileJSONPane.add(fileJSONNameField,BorderLayout.CENTER);
+		JTextPane tagMapperPane = new JTextPane();
+		tagMapperPane.setLayout(new BorderLayout());
+		tagMapperPane.setPreferredSize(new Dimension(900,25));
+		JLabel tagFileNameLabel = new JLabel("Tag Mapper File(json):",JLabel.TRAILING);
+		tagFileNameLabel.setLabelFor(tagMapperFilenameField);
+		tagMapperFilenameField.setPreferredSize(new Dimension(500,20));
+//		fileJSONNameField.setMinimumSize(new Dimension(100,50));
+		tagMapperFilenameField.setEditable(false);
+		
+		tagMapperPane.add(tagMapperFilenameField,BorderLayout.CENTER);
 
-		JButton openJSONFileButton = new JButton(verticalToolBar.getOpenDefineFile().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
-		openJSONFileButton.setPreferredSize(dim);
-		openJSONFileButton.addActionListener(new ActionListener(){
+		JButton openTagMapperFileButton = new JButton(verticalToolBar.getOpenDefineFile().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		openTagMapperFileButton.setPreferredSize(dim);
+		openTagMapperFileButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				verticalToolBar.getOpenDefineFile().actionPerformed(e);
 			}
 		}
 				);
-		fileJSONPane.add(openJSONFileButton,BorderLayout.EAST);
-		fileJSONPane.add(JSONfileNameLabel,BorderLayout.WEST);
-		filesTextPane.add(fileJSONPane,BorderLayout.SOUTH);
+		tagMapperPane.add(openTagMapperFileButton,BorderLayout.EAST);
+		tagMapperPane.add(tagFileNameLabel,BorderLayout.WEST);
+
+		JTextPane dataFilePane = new JTextPane();
+		dataFilePane.setLayout(new BorderLayout());
+		dataFilePane.setPreferredSize(new Dimension(900,25));
+		JLabel dataFileNameLabel = new JLabel("Data File(json):",JLabel.TRAILING);
+		dataFileNameLabel.setLabelFor(dataFilenameField);
+		dataFilenameField.setPreferredSize(new Dimension(500,20));
+//		fileJSONNameField.setMinimumSize(new Dimension(100,50));
+		dataFilenameField.setEditable(false);
+		
+		dataFilePane.add(dataFilenameField,BorderLayout.CENTER);
+
+		JButton openDataFileButton = new JButton(verticalToolBar.getOpenDataFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		openDataFileButton.setPreferredSize(dim);
+		openDataFileButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				verticalToolBar.getOpenDataFileAction().actionPerformed(e);
+			}
+		}
+				);
+		dataFilePane.add(openDataFileButton,BorderLayout.EAST);
+		dataFilePane.add(dataFileNameLabel,BorderLayout.WEST);
+
+		filesTextPane.add(fileTemplatePane,BorderLayout.NORTH);
+		filesTextPane.add(tagMapperPane,BorderLayout.CENTER);
+		filesTextPane.add(dataFilePane,BorderLayout.SOUTH);
 		
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,filesTextPane,sqlTagSplitPane);
 		content.add(mainSplitPane,BorderLayout.CENTER);
@@ -254,5 +287,8 @@ public class MainFrame extends JFrame {
 		return (JOptionPane.showConfirmDialog(this,t,"Warning",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION);
+	}
+	public JTextField getDataFilenameField() {
+		return dataFilenameField;
 	}
 }

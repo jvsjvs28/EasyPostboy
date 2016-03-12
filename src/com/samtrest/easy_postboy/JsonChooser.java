@@ -10,9 +10,11 @@ import javax.swing.filechooser.FileFilter;
 public class JsonChooser extends JFrame {
 	JFileChooser fc = new JFileChooser();
 	String path;
+	
 	public JsonChooser(JTextField dir,int dialog_type,String title)
 	{
-		super("Choose definition json file path");
+		super();
+		setTitle(title);
 		fc.setDialogTitle(title);
 		fc.setFileSelectionMode((dialog_type));
 		fc.addChoosableFileFilter(new JSONFilesFilter());

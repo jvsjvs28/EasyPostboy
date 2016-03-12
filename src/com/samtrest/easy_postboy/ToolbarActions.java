@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 public class ToolbarActions extends JToolBar  {
 	static  Logger log = LoggerFactory.getLogger(ToolbarActions.class );
 	OpenTemplateFileAction openTemplateFileAction = new OpenTemplateFileAction();
-	OpenMapperFile openDefineFileAction = new OpenMapperFile();
+	OpenMapperFile openMapperFile = new OpenMapperFile();
+	OpenDataFileAction openDataFileAction = new OpenDataFileAction();
 	QuitAction quitAction = new QuitAction();
 	AboutAction aboutAction = new AboutAction();
 	OnlineAction onlineAction = new OnlineAction();
@@ -48,29 +49,24 @@ public class ToolbarActions extends JToolBar  {
 	public class OpenMapperFile extends AbstractAction {
 
 		public OpenMapperFile() {
-			putValue(AbstractAction.SMALL_ICON,UICommonUtil.createImageIcon("define_file.gif"));
+			putValue(AbstractAction.SMALL_ICON,UICommonUtil.createImageIcon("open_mapper_file.gif"));
 			putValue(AbstractAction.SHORT_DESCRIPTION,"Open definition file");
 		}
 
 		public void actionPerformed(ActionEvent arg0) {
 			if (!isEnabled())
 				return;
-			Memory.mainFrame.fileJSONNameField.setText(new JsonChooser(Memory.mainFrame.fileJSONNameField,JFileChooser.FILES_ONLY,
+			Memory.mainFrame.tagMapperFilenameField.setText(new JsonChooser(Memory.mainFrame.tagMapperFilenameField,JFileChooser.FILES_ONLY,
 					"Choose mapping json file").getPath());
-			Memory.tagMapper = new TagMapper();
-			Memory.tagMapper.readJsonFromFile(new File(Memory.mainFrame.fileJSONNameField.getText()));
-			Memory.tagMapper.parseJson();
+			Memory.tagMapperJsonFile = new File(Memory.mainFrame.tagMapperFilenameField.getText());
 
-			if (log.isTraceEnabled()){
-				Memory.tagMapper.printJson();
-			}
-			Memory.getEpProps().setProperty(Sets.JSON_PROPERTY_NAME,"" + Memory.mainFrame.fileJSONNameField.getText());
+			Memory.getEpProps().setProperty(Sets.MAP_FILE_PROPERTY_NAME,"" + Memory.mainFrame.tagMapperFilenameField.getText());
 		}
 	}
 	public class OpenTemplateFileAction extends AbstractAction {
 
 		public OpenTemplateFileAction() {
-			putValue(AbstractAction.SMALL_ICON,UICommonUtil.createImageIcon("open_file.gif"));
+			putValue(AbstractAction.SMALL_ICON,UICommonUtil.createImageIcon("open_template_file.gif"));
 			putValue(AbstractAction.SHORT_DESCRIPTION,"Open template RTF file");
 		}
 
@@ -83,7 +79,28 @@ public class ToolbarActions extends JToolBar  {
 				Memory.rtfProcessor = new RtfTemplate(
 						               new File(Memory.mainFrame.fileTemplateNameField.getText()));
 			}
-			Memory.getEpProps().setProperty(Sets.TEMPLATE_PROPERTY_NAME,"" + Memory.mainFrame.fileTemplateNameField.getText());
+			Memory.getEpProps().setProperty(Sets.TEMPLATE_FILE_PROPERTY_NAME,"" + Memory.mainFrame.fileTemplateNameField.getText());
+		}
+	}
+
+	public class OpenDataFileAction extends AbstractAction {
+
+		public OpenDataFileAction() {
+			putValue(AbstractAction.SMALL_ICON,UICommonUtil.createImageIcon("open_data_file.gif"));
+			putValue(AbstractAction.SHORT_DESCRIPTION,"Open data file");
+		}
+
+		public void actionPerformed(ActionEvent arg0) {
+			if (!isEnabled())
+				return;
+			Memory.mainFrame.dataFilenameField.setText(new JsonChooser(Memory.mainFrame.dataFilenameField,JFileChooser.FILES_ONLY,
+					"Choose data json file").getPath());
+			Memory.dataJsonFile = new File(Memory.mainFrame.dataFilenameField.getText());
+
+			if (log.isTraceEnabled()){
+				Memory.tagMapper.printJson();
+			}
+			Memory.getEpProps().setProperty(Sets.DATA_FILE_PROPERTY_NAME,"" + Memory.mainFrame.tagMapperFilenameField.getText());
 		}
 	}
 
@@ -233,7 +250,7 @@ public class ToolbarActions extends JToolBar  {
 		Dimension separatorDim = new Dimension(10,5);
 		Dimension separatorBigDim = new Dimension(10,10);
 		add(logonToDBAction);
-		add(openDefineFileAction);
+		add(openMapperFile);
 		add(openTemplateFileAction);
 		addSeparator(separatorDim);
 		add(checkTemplateAction);
@@ -264,7 +281,11 @@ public class ToolbarActions extends JToolBar  {
 	}
 
 	public OpenMapperFile getOpenDefineFile() {
-		return openDefineFileAction;
+		return openMapperFile;
+	}
+
+	public OpenDataFileAction getOpenDataFileAction() {
+		return openDataFileAction;
 	}
 
 }

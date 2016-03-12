@@ -40,7 +40,7 @@ public class Sets
 	public static Font   BOLD_FONT = new Font(FONT_FAMILY, Font.BOLD, 12);
 	public static Font   PLAIN_FONT = new Font(FONT_FAMILY, Font.PLAIN, 12);
 	
-	public static String JSON_FILENAME = "ep.json"; 
+	public static String JSON_FILENAME = ""; 
 	//   HSQLDB
 	public static String HSQLDBDir ="db";
 	public static String HSQLDBPort ="9005";
@@ -54,7 +54,8 @@ public class Sets
 	public static final String [] IGNORE_KEYS ={
 			"*","fonttbl","colortbl","datastore","themedata"
 	};
-    public static final String TEMPLATE_PROPERTY_NAME = "Template file";
-    public static final String JSON_PROPERTY_NAME = "JSON file";
+    public static final String TEMPLATE_FILE_PROPERTY_NAME = "Template file";
+    public static final String MAP_FILE_PROPERTY_NAME = "Mapping file";
+    public static final String DATA_FILE_PROPERTY_NAME = "Data file";
 	
 }

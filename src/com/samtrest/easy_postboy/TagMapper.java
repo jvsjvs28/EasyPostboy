@@ -14,17 +14,29 @@ import java.io.Writer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TagMapper {
 
 	static  Logger log = LoggerFactory.getLogger(TagMapper.class );
-	JSONObject json;
-
-	public TagMapper() {
+	JSONObject tagMapperJson;
+	
+	public TagMapper(String tagStr) {
 		super();
-		json = new JSONObject();
+		tagMapperJson = new JSONObject();
+		try {
+			readJsonFromStr(tagStr);
+		} catch (ParseException e) {
+			log.error("ParseException {}\n{}",UICommonUtil.formatMessage(e));
+		}
+	}
+
+	public TagMapper(File file) {
+		super();
+		tagMapperJson = new JSONObject();
+		readJsonFromFile(file);
 	}
 
 	public static JSONObject createJSONObject(Object key,Object value){
@@ -34,7 +46,7 @@ public class TagMapper {
 	}
 
 	public void printJson(){
-		JSONArray array = (JSONArray) json.get(Sets.JSON_MAPPER_MAIN_TAGNAME);
+		JSONArray array = (JSONArray) tagMapperJson.get(Sets.JSON_MAPPER_MAIN_TAGNAME);
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject element = (JSONObject)((JSONObject)array.get(i)).get(Sets.JSON_ELEMENT);
 			log.trace(element.toJSONString());
@@ -42,7 +54,7 @@ public class TagMapper {
 	}
 
 	public void parseJson(){
-		JSONArray array = (JSONArray) json.get(Sets.JSON_MAPPER_MAIN_TAGNAME);
+		JSONArray array = (JSONArray) tagMapperJson.get(Sets.JSON_MAPPER_MAIN_TAGNAME);
 		Memory.setJsonElements(new TagObject[array.size()]);
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject element = (JSONObject)((JSONObject)array.get(i)).get(Sets.JSON_ELEMENT); 
@@ -59,20 +71,24 @@ public class TagMapper {
 		str += "]";
 	}
 
+	public void readJsonFromStr(String str) throws ParseException{
+		JSONParser parser = new JSONParser();
+		tagMapperJson = (JSONObject) parser.parse(str);		
+	}
+	
 	public void readJsonFromFile(File file){
 		File theFile = file;
 		if (theFile == null){
-			if ("".equals(Memory.mainFrame.fileJSONNameField.getText())){
-				Memory.mainFrame.fileJSONNameField.setText(Sets.JSON_FILENAME);
+			if ("".equals(Memory.mainFrame.tagMapperFilenameField.getText())){
+				Memory.mainFrame.tagMapperFilenameField.setText(Sets.JSON_FILENAME);
 			}			try {
-				theFile = new File(Memory.mainFrame.fileJSONNameField.getText());
+				theFile = new File(Memory.mainFrame.tagMapperFilenameField.getText());
 			}catch (Exception e){
 				log.error("Exception {}\n{}",UICommonUtil.formatMessage(e));
 				Memory.tagMapper.populateDefaultMapperJson();
 				return;
 			}
 		}
-		JSONParser parser = new JSONParser();
 		try {
 			StringBuffer sb = new StringBuffer();
 
@@ -84,7 +100,7 @@ public class TagMapper {
 				sb.append(str);
 			}
 			in.close();
-			json = (JSONObject) parser.parse(sb.toString());
+			readJsonFromStr(sb.toString());
 		}catch (UnsupportedEncodingException e){
 			log.error("UnsupportedEncodingException {}\n{}",UICommonUtil.formatMessage(e));			System.out.println(e.getMessage());
 		} catch (IOException e){
@@ -222,7 +238,7 @@ public class TagMapper {
 		element.put(Sets.JSON_SOURCES, internalDefArray);	
 		array.add(TagMapper.createJSONObject(Sets.JSON_ELEMENT, element));
 
-		json.put(Sets.JSON_MAPPER_MAIN_TAGNAME,array);
+		tagMapperJson.put(Sets.JSON_MAPPER_MAIN_TAGNAME,array);
 
 		//		System.out.println(json.toJSONString());
 
@@ -237,7 +253,7 @@ public class TagMapper {
 			out = new BufferedWriter(
 					new OutputStreamWriter(
 							new FileOutputStream(file), "UTF8"));
-			out.write(json.toJSONString());
+			out.write(tagMapperJson.toJSONString());
 
 			out.flush();
 			out.close();
@@ -246,11 +262,11 @@ public class TagMapper {
 		}
 	}
 
-	public JSONObject getJson() {
-		return json;
+	public JSONObject getTagMapperJson() {
+		return tagMapperJson;
 	}
 
-	public void setJson(JSONObject json) {
-		this.json = json;
+	public void setTagMapperJson(JSONObject tagMapperJson) {
+		this.tagMapperJson = tagMapperJson;
 	}
 }

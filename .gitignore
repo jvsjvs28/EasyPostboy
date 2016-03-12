@@ -4,3 +4,25 @@
 /postboy_info.log
 /postboy_trace.log
 /target/
+/epProperties
+
+# Created by https://www.gitignore.io/api/eclipse
+
+### Eclipse ###
+
+.metadata
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
+# Eclipse Core
+.project
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
