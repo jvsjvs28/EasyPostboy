@@ -17,6 +17,8 @@ public class Sets
 
 	public static final String JSON_DATA_MAIN_TAGNAME = "EP_DATA";
 	public static final String JSON_DATA_FILE_ID = "FILE_ID";
+	public static final String JSON_ROW = "ROW";
+	public static final String FILE_PREFIX = "ep_";
 
 	public static final String TAG_TYPE_FIELD = "FIELD";
 	public static final String TAG_TYPE_FIELD_IN_TABLE = "TABLE";
@@ -57,5 +59,6 @@ public class Sets
     public static final String TEMPLATE_FILE_PROPERTY_NAME = "Template file";
     public static final String MAP_FILE_PROPERTY_NAME = "Mapping file";
     public static final String DATA_FILE_PROPERTY_NAME = "Data file";
+    public static final String OUT_DIRECTORY_PROPERTY_NAME = "Out dir";
 	
 }

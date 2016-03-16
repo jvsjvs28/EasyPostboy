@@ -3,7 +3,10 @@ package com.samtrest.easy_postboy;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -20,6 +23,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -32,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 public class MainFrame extends JFrame {
 	static  Logger log = LoggerFactory.getLogger(MainFrame.class );
-	private ToolbarActions verticalToolBar = new ToolbarActions();
 	private JMenuItem openTemplateFileMenItem,openMappingFileMenItem,openDataFileMenItem,checkTemplateMenItem,
 	logonToDBMenItem,createTargetFilesMenItem,copyClipBoardMenuItem,infoMenuItem,quitMenuItem;
 	JTextField fileTemplateNameField = new JTextField();
@@ -41,6 +44,7 @@ public class MainFrame extends JFrame {
 
 	public MainFrame(String title,boolean isVisible) throws HeadlessException {
 		super(title);
+
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
@@ -76,43 +80,36 @@ public class MainFrame extends JFrame {
 		menuBar.add(aboutMenu);
 
 		// File menu		
-		logonToDBMenItem = new JMenuItem(verticalToolBar.getLogonToDBAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
-		logonToDBMenItem.setEnabled(true);
-		logonToDBMenItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.getLogonToDBAction().actionPerformed(arg0);
-			}
-		});	
-		openTemplateFileMenItem = new JMenuItem(verticalToolBar.getOpenFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+
+		openTemplateFileMenItem = new JMenuItem(Memory.verticalToolBar.getOpenFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		openTemplateFileMenItem.setEnabled(true);
 		openTemplateFileMenItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.getOpenFileAction().actionPerformed(arg0);
+				Memory.verticalToolBar.getOpenFileAction().actionPerformed(arg0);
 			}
 		});	
-		openMappingFileMenItem = new JMenuItem(verticalToolBar.getOpenDefineFile().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		openMappingFileMenItem = new JMenuItem(Memory.verticalToolBar.getOpenDefineFile().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		openMappingFileMenItem.setEnabled(true);
 		openMappingFileMenItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.getOpenDefineFile().actionPerformed(arg0);
+				Memory.verticalToolBar.getOpenDefineFile().actionPerformed(arg0);
 			}
 		});	
-		openDataFileMenItem = new JMenuItem(verticalToolBar.getOpenDataFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		openDataFileMenItem = new JMenuItem(Memory.verticalToolBar.getOpenDataFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		openDataFileMenItem.setEnabled(true);
 		openDataFileMenItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.getOpenDataFileAction().actionPerformed(arg0);
+				Memory.verticalToolBar.getOpenDataFileAction().actionPerformed(arg0);
 			}
 		});	
-		quitMenuItem = new JMenuItem(verticalToolBar.getQuitAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		quitMenuItem = new JMenuItem(Memory.verticalToolBar.getQuitAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		quitMenuItem.setEnabled(true);
 		quitMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.getQuitAction().actionPerformed(arg0);
+				Memory.verticalToolBar.getQuitAction().actionPerformed(arg0);
 			}
 		});	
 
-		fileMenu.add(logonToDBMenItem);
 		fileMenu.add(openMappingFileMenItem);
 		fileMenu.add(openTemplateFileMenItem);
 		fileMenu.add(openDataFileMenItem);
@@ -120,18 +117,18 @@ public class MainFrame extends JFrame {
 		fileMenu.add(quitMenuItem);
 
 		//Action menu
-		checkTemplateMenItem = new JMenuItem(verticalToolBar.getCheckTemplateAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		checkTemplateMenItem = new JMenuItem(Memory.verticalToolBar.getCheckTemplateAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		checkTemplateMenItem.setEnabled(true);
 		checkTemplateMenItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.getCheckTemplateAction().actionPerformed(arg0);
+				Memory.verticalToolBar.getCheckTemplateAction().actionPerformed(arg0);
 			}
 		});	
-		createTargetFilesMenItem = new JMenuItem(verticalToolBar.getCreateFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		createTargetFilesMenItem = new JMenuItem(Memory.verticalToolBar.getCreateFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		createTargetFilesMenItem.setEnabled(true);
 		createTargetFilesMenItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.getCreateFileAction().actionPerformed(arg0);
+				Memory.verticalToolBar.getCreateFileAction().actionPerformed(arg0);
 			}
 		});	
 
@@ -140,22 +137,22 @@ public class MainFrame extends JFrame {
 
 
 		// About menu
-		JMenuItem online_menu_item = new JMenuItem(verticalToolBar.onlineAction.getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		JMenuItem online_menu_item = new JMenuItem(Memory.verticalToolBar.onlineAction.getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		online_menu_item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.onlineAction.actionPerformed(arg0);
+				Memory.verticalToolBar.onlineAction.actionPerformed(arg0);
 			}
 		});		
-		JMenuItem about_menu_item = new JMenuItem(verticalToolBar.aboutAction.getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		JMenuItem about_menu_item = new JMenuItem(Memory.verticalToolBar.aboutAction.getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		about_menu_item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.aboutAction.actionPerformed(arg0);
+				Memory.verticalToolBar.aboutAction.actionPerformed(arg0);
 			}
 		});		
-		JMenuItem news_menu_item = new JMenuItem(verticalToolBar.newsAction.getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		JMenuItem news_menu_item = new JMenuItem(Memory.verticalToolBar.newsAction.getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		news_menu_item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				verticalToolBar.newsAction.actionPerformed(arg0);
+				Memory.verticalToolBar.newsAction.actionPerformed(arg0);
 			}
 		});
 
@@ -163,7 +160,7 @@ public class MainFrame extends JFrame {
 		aboutMenu.add(news_menu_item);
 		aboutMenu.add(about_menu_item);
 		this.setJMenuBar(menuBar);
-		content.add(verticalToolBar,BorderLayout.WEST);		
+		content.add(Memory.verticalToolBar,BorderLayout.WEST);		
 
 		Dimension dim = new Dimension(150,20);
 
@@ -193,88 +190,87 @@ public class MainFrame extends JFrame {
 		sqlTagSplitPane.setOneTouchExpandable(true);
 		sqlTagSplitPane.setResizeWeight(0.5);
 
-		JTextPane filesTextPane = new JTextPane();
-		filesTextPane.setLayout(new BorderLayout());
-		filesTextPane.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder(
-						"Definition files"),
-				BorderFactory.createEmptyBorder(2,2,2,2)));
-		filesTextPane.setPreferredSize(new Dimension(900,100));
-		
-		JTextPane fileTemplatePane = new JTextPane();
-		fileTemplatePane.setPreferredSize(new Dimension(900,25));
-		fileTemplatePane.setLayout(new BorderLayout());
 		JLabel TemplateFileNameLabel = new JLabel("Template File(rtf):",JLabel.TRAILING);
 		TemplateFileNameLabel.setAlignmentY(10);
 		TemplateFileNameLabel.setLabelFor(fileTemplateNameField);
 		fileTemplateNameField.setPreferredSize(new Dimension(500,20));
-//		fileTemplateNameField.setMinimumSize(new Dimension(100,50));		
-		fileTemplateNameField.setEditable(false);
-
-		fileTemplatePane.add(fileTemplateNameField,BorderLayout.CENTER);
-
-		JButton openTemplateFileButton = new JButton(verticalToolBar.getOpenFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		fileTemplateNameField.setEditable(true);
+		JButton openTemplateFileButton = new JButton(Memory.verticalToolBar.getOpenFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		openTemplateFileButton.setPreferredSize(dim);
 		openTemplateFileButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				verticalToolBar.getOpenFileAction().actionPerformed(e);
+				Memory.verticalToolBar.getOpenFileAction().actionPerformed(e);
+				fileTemplateNameField.setText((String)Memory.getEpProps().get(Sets.TEMPLATE_FILE_PROPERTY_NAME));
 			}
 		}
 				);
-		fileTemplatePane.add(openTemplateFileButton,BorderLayout.EAST);
-		fileTemplatePane.add(TemplateFileNameLabel,BorderLayout.WEST);
-		
-		JTextPane tagMapperPane = new JTextPane();
-		tagMapperPane.setLayout(new BorderLayout());
-		tagMapperPane.setPreferredSize(new Dimension(900,25));
+
 		JLabel tagFileNameLabel = new JLabel("Tag Mapper File(json):",JLabel.TRAILING);
 		tagFileNameLabel.setLabelFor(tagMapperFilenameField);
 		tagMapperFilenameField.setPreferredSize(new Dimension(500,20));
-//		fileJSONNameField.setMinimumSize(new Dimension(100,50));
-		tagMapperFilenameField.setEditable(false);
-		
-		tagMapperPane.add(tagMapperFilenameField,BorderLayout.CENTER);
-
-		JButton openTagMapperFileButton = new JButton(verticalToolBar.getOpenDefineFile().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		tagMapperFilenameField.setEditable(true);
+		JButton openTagMapperFileButton = new JButton(Memory.verticalToolBar.getOpenDefineFile().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		openTagMapperFileButton.setPreferredSize(dim);
 		openTagMapperFileButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				verticalToolBar.getOpenDefineFile().actionPerformed(e);
+				Memory.verticalToolBar.getOpenDefineFile().actionPerformed(e);
+				tagMapperFilenameField.setText((String)Memory.getEpProps().get(Sets.MAP_FILE_PROPERTY_NAME));
 			}
 		}
 				);
-		tagMapperPane.add(openTagMapperFileButton,BorderLayout.EAST);
-		tagMapperPane.add(tagFileNameLabel,BorderLayout.WEST);
 
-		JTextPane dataFilePane = new JTextPane();
-		dataFilePane.setLayout(new BorderLayout());
-		dataFilePane.setPreferredSize(new Dimension(900,25));
 		JLabel dataFileNameLabel = new JLabel("Data File(json):",JLabel.TRAILING);
 		dataFileNameLabel.setLabelFor(dataFilenameField);
 		dataFilenameField.setPreferredSize(new Dimension(500,20));
-//		fileJSONNameField.setMinimumSize(new Dimension(100,50));
-		dataFilenameField.setEditable(false);
-		
-		dataFilePane.add(dataFilenameField,BorderLayout.CENTER);
+		dataFilenameField.setEditable(true);
 
-		JButton openDataFileButton = new JButton(verticalToolBar.getOpenDataFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
+		JButton openDataFileButton = new JButton(Memory.verticalToolBar.getOpenDataFileAction().getValue(AbstractAction.SHORT_DESCRIPTION).toString());
 		openDataFileButton.setPreferredSize(dim);
 		openDataFileButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				verticalToolBar.getOpenDataFileAction().actionPerformed(e);
+				Memory.verticalToolBar.getOpenDataFileAction().actionPerformed(e);
+				dataFilenameField.setText((String)Memory.getEpProps().get(Sets.DATA_FILE_PROPERTY_NAME));
 			}
 		}
 				);
-		dataFilePane.add(openDataFileButton,BorderLayout.EAST);
-		dataFilePane.add(dataFileNameLabel,BorderLayout.WEST);
-
-		filesTextPane.add(fileTemplatePane,BorderLayout.NORTH);
-		filesTextPane.add(tagMapperPane,BorderLayout.CENTER);
-		filesTextPane.add(dataFilePane,BorderLayout.SOUTH);
 		
-		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,filesTextPane,sqlTagSplitPane);
+		JPanel filesPanel = new JPanel(new GridBagLayout());
+		
+		
+		filesPanel.add(TemplateFileNameLabel, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));		
+		filesPanel.add(fileTemplateNameField, new GridBagConstraints(1, 0, 5, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));		
+		filesPanel.add(openTemplateFileButton, new GridBagConstraints(6, 0, 1, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));		
+		
+		filesPanel.add(tagFileNameLabel, new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));		
+		filesPanel.add(tagMapperFilenameField, new GridBagConstraints(1, 1, 5, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));		
+		filesPanel.add(openTagMapperFileButton, new GridBagConstraints(6, 1, 1, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));		
+		
+		filesPanel.add(dataFileNameLabel, new GridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));		
+		filesPanel.add(dataFilenameField, new GridBagConstraints(1, 2, 5, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));		
+		filesPanel.add(openDataFileButton, new GridBagConstraints(6, 2, 1, 1, 0, 0, GridBagConstraints.NORTH,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));		
+		
+		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,filesPanel,sqlTagSplitPane);
 		content.add(mainSplitPane,BorderLayout.CENTER);
-		
+
+		if (!"".equals((String)Memory.getEpProps().get(Sets.TEMPLATE_FILE_PROPERTY_NAME))){
+			fileTemplateNameField.setText((String)Memory.getEpProps().get(Sets.TEMPLATE_FILE_PROPERTY_NAME));
+		}
+		if (!"".equals((String)Memory.getEpProps().get(Sets.DATA_FILE_PROPERTY_NAME))){
+			dataFilenameField.setText((String)Memory.getEpProps().get(Sets.DATA_FILE_PROPERTY_NAME));
+		}
+		if (!"".equals((String)Memory.getEpProps().get(Sets.MAP_FILE_PROPERTY_NAME))){
+			tagMapperFilenameField.setText((String)Memory.getEpProps().get(Sets.MAP_FILE_PROPERTY_NAME));
+		}
+
 		setVisible(isVisible);
 	}
 	public void message(String t){

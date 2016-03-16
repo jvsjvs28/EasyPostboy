@@ -18,11 +18,12 @@ public class Memory {
     private static Properties epProps;
 	private static boolean hsqldbJARexists = false;
 	public static MainFrame mainFrame;
+	public static ToolbarActions verticalToolBar;
 
 	public static TagMapper tagMapper;
-    public static RtfTemplate rtfProcessor;
-    
-    public static JSONObject dataJson;
+    public static RtfTemplateProcessor rtfProcessor;
+    public static DataProcessor dataProcessor;
+    public static EasyPostboyApp easyPostboyApp;
     
     public static File templateFile;
     public static File dataJsonFile;
@@ -97,7 +98,7 @@ public class Memory {
 	public static void setDbCon(Connection dbCon) {
 		Memory.dbCon = dbCon;
 	}
-	public static RtfTemplate getTemplate() {
+	public static RtfTemplateProcessor getTemplate() {
 		return rtfProcessor;
 	}
 	public static String getRepositoryType() {

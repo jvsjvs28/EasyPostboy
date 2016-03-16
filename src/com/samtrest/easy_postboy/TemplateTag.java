@@ -7,24 +7,15 @@ import java.util.List;
 
 public class TemplateTag {
 	private String tag;
+	private String mapTag;
+	private String dataTag;
 	private List<RTFTextUnit> units;	
 
 	public TemplateTag() {
 		super();
 		units = new ArrayList<RTFTextUnit>() ;
 	}
-	public String getTag() {
-		return tag;
-	}
-	public void setTag(String tag) {
-		this.tag = tag;
-	}
-	public List<RTFTextUnit> getUnits() {
-		return units;
-	}
-	public void setUnits(List<RTFTextUnit> units) {
-		this.units = units;
-	}
+
 	public String toString(){
 		String str = "";
 		int curPos = 0,begPos = 0;
@@ -43,4 +34,41 @@ public class TemplateTag {
 		}
 		return str;
 	}
+	
+	public String getTagValue() {
+		return dataTag;
+	}
+	
+	public String getMapTag() {
+		return mapTag;
+	}
+	
+	public void setMapTag(String mapTag) {
+		this.mapTag = mapTag;
+	}
+	
+	public String getDataTag() {
+		return dataTag;
+	}
+	
+	public void setDataTag(String dataTag) {
+		this.dataTag = dataTag;
+	}
+	
+	public String getTag() {
+		return tag;
+	}
+	
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	
+	public List<RTFTextUnit> getUnits() {
+		return units;
+	}
+	
+	public void setUnits(List<RTFTextUnit> units) {
+		this.units = units;
+	}
+	
 }

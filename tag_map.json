@@ -1,0 +1,40 @@
+{
+  "POSTBOY_JSON": [
+    {
+      "TAG": "<<מספר לקוח>>",
+      "VALUE": "client_id"
+    },
+    {
+      "TAG": "<<שם פרטי לקוח>>",
+      "VALUE": "first_name"
+    },
+    {
+      "TAG": "<<שם משפחה לקוח>>",
+      "VALUE": "last_name"
+    },
+    {
+      "TAG": "<<שם לקוח>>",
+      "VALUE": "client_name"
+    },
+    {
+      "TAG": "<<תאריך נוכחי>>",
+      "VALUE": "current_date"
+    },
+    {
+      "TAG": "<<תאריך פניה>>",
+      "VALUE": "letter_date"
+    },
+    {
+      "TAG": "<<חוזה>>",
+      "VALUE": "contract"
+    },
+    {
+      "TAG": "<<כתובת שורה1>>",
+      "VALUE": "address_line1"
+    },
+    {
+      "TAG": "<<כתובת שורה2>>",
+      "VALUE": "address_line2"
+    }
+  ]
+}

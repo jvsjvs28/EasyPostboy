@@ -7,6 +7,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -31,21 +32,9 @@ public class ToolbarActions extends JToolBar  {
 	AboutAction aboutAction = new AboutAction();
 	OnlineAction onlineAction = new OnlineAction();
 	NewsAction newsAction = new NewsAction();
-	LogonToDBAction logonToDBAction = new LogonToDBAction();
 	CreateFileAction createFileAction = new CreateFileAction();
 	CheckTemplateAction checkTemplateAction = new CheckTemplateAction();
 
-	public class LogonToDBAction extends AbstractAction {
-
-		public LogonToDBAction() {
-			putValue(AbstractAction.SMALL_ICON,UICommonUtil.createImageIcon("logon.gif"));
-			putValue(AbstractAction.SHORT_DESCRIPTION,"Logon to DB");
-		}
-
-		public void actionPerformed(ActionEvent arg0) {
-			new Login();
-		}
-	}
 	public class OpenMapperFile extends AbstractAction {
 
 		public OpenMapperFile() {
@@ -56,11 +45,12 @@ public class ToolbarActions extends JToolBar  {
 		public void actionPerformed(ActionEvent arg0) {
 			if (!isEnabled())
 				return;
-			Memory.mainFrame.tagMapperFilenameField.setText(new JsonChooser(Memory.mainFrame.tagMapperFilenameField,JFileChooser.FILES_ONLY,
-					"Choose mapping json file").getPath());
-			Memory.tagMapperJsonFile = new File(Memory.mainFrame.tagMapperFilenameField.getText());
-
-			Memory.getEpProps().setProperty(Sets.MAP_FILE_PROPERTY_NAME,"" + Memory.mainFrame.tagMapperFilenameField.getText());
+			Memory.getEpProps().setProperty(Sets.MAP_FILE_PROPERTY_NAME,"" + 
+					new JsonChooser(Memory.mainFrame.tagMapperFilenameField,JFileChooser.FILES_ONLY,
+							"Choose mapping json file").getPath());
+			if (!"".equals((String)Memory.getEpProps().get(Sets.MAP_FILE_PROPERTY_NAME))){
+				new TagMapper(new File((String)Memory.getEpProps().get(Sets.MAP_FILE_PROPERTY_NAME)));
+			}
 		}
 	}
 	public class OpenTemplateFileAction extends AbstractAction {
@@ -73,13 +63,12 @@ public class ToolbarActions extends JToolBar  {
 		public void actionPerformed(ActionEvent arg0) {
 			if (!isEnabled())
 				return;
-			Memory.mainFrame.fileTemplateNameField.setText(new RTFChooser(Memory.mainFrame.fileTemplateNameField,JFileChooser.FILES_ONLY,
-					"Choose RTF file").getPath());
-			if (!"".equals(Memory.mainFrame.fileTemplateNameField.getText())){
-				Memory.rtfProcessor = new RtfTemplate(
-						               new File(Memory.mainFrame.fileTemplateNameField.getText()));
+			Memory.getEpProps().setProperty(Sets.TEMPLATE_FILE_PROPERTY_NAME,"" + 
+					new RTFChooser(Memory.mainFrame.fileTemplateNameField,JFileChooser.FILES_ONLY,
+							"Choose RTF file").getPath());
+			if (!"".equals((String)Memory.getEpProps().get(Sets.TEMPLATE_FILE_PROPERTY_NAME))){
+				new RtfTemplateProcessor(new File((String)Memory.getEpProps().get(Sets.TEMPLATE_FILE_PROPERTY_NAME)));
 			}
-			Memory.getEpProps().setProperty(Sets.TEMPLATE_FILE_PROPERTY_NAME,"" + Memory.mainFrame.fileTemplateNameField.getText());
 		}
 	}
 
@@ -93,14 +82,12 @@ public class ToolbarActions extends JToolBar  {
 		public void actionPerformed(ActionEvent arg0) {
 			if (!isEnabled())
 				return;
-			Memory.mainFrame.dataFilenameField.setText(new JsonChooser(Memory.mainFrame.dataFilenameField,JFileChooser.FILES_ONLY,
-					"Choose data json file").getPath());
-			Memory.dataJsonFile = new File(Memory.mainFrame.dataFilenameField.getText());
-
-			if (log.isTraceEnabled()){
-				Memory.tagMapper.printJson();
+			Memory.getEpProps().setProperty(Sets.DATA_FILE_PROPERTY_NAME,"" +
+					new JsonChooser(Memory.mainFrame.dataFilenameField,JFileChooser.FILES_ONLY,
+							"Choose data json file").getPath());
+			if (!"".equals((String)Memory.getEpProps().get(Sets.DATA_FILE_PROPERTY_NAME))){
+				new DataProcessor(new File((String)Memory.getEpProps().get(Sets.DATA_FILE_PROPERTY_NAME)));
 			}
-			Memory.getEpProps().setProperty(Sets.DATA_FILE_PROPERTY_NAME,"" + Memory.mainFrame.tagMapperFilenameField.getText());
 		}
 	}
 
@@ -114,8 +101,30 @@ public class ToolbarActions extends JToolBar  {
 		public void actionPerformed(ActionEvent arg0) {
 			if (!isEnabled())
 				return;
-			Memory.setTargetDir(new RTFChooser(Memory.mainFrame.fileTemplateNameField,JFileChooser.DIRECTORIES_ONLY,
-					"Choose target directory").getPath());
+			if (Memory.rtfProcessor != null && Memory.tagMapper != null &&
+					Memory.dataProcessor != null){
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if (fileChooser.showDialog(null, "Choose target directory") == JFileChooser.APPROVE_OPTION){
+					Memory.outDir = fileChooser.getSelectedFile().getPath()+"\\"; 
+					Memory.getEpProps().setProperty(Sets.OUT_DIRECTORY_PROPERTY_NAME,"" +Memory.outDir);
+					ArrayList<String> errors ;
+					if (!"".equals((String)Memory.getEpProps().get(Sets.OUT_DIRECTORY_PROPERTY_NAME))){
+						errors = Memory.rtfProcessor.checkTemplateForMapper();
+						if (errors.size() != 0){
+							log.error(" {} Mapping errors found",errors.size());
+							return;
+						}
+					}
+					errors = Memory.rtfProcessor.checkTemplateForData();
+					if (errors.size() != 0){
+						log.error(" {} Data errors found",errors.size());
+						return;
+					}
+					//				Continue
+					Memory.easyPostboyApp.createFiles(Memory.easyPostboyApp.createDocs());
+				}
+			}
 		}
 	}
 
@@ -136,7 +145,24 @@ public class ToolbarActions extends JToolBar  {
 			putValue(AbstractAction.SHORT_DESCRIPTION,"Check template");
 		}
 		public void actionPerformed(ActionEvent arg0) {
-
+			if (Memory.rtfProcessor != null && Memory.tagMapper != null){
+				ArrayList<String> errors = Memory.rtfProcessor.checkTemplateForMapper();
+				if (errors.size() != 0){
+					log.error(" {} Mapping errors found",errors.size());
+					return;
+				}else{
+					System.out.println("Mapping check OK");
+				}
+			}
+			if (Memory.dataProcessor != null){
+				ArrayList<String> errors = Memory.rtfProcessor.checkTemplateForData();
+				if (errors.size() != 0){
+					log.error(" {} Data errors found",errors.size());
+					return;
+				}else{
+					System.out.println("Data check OK");
+				}
+			}
 		}
 	}
 
@@ -249,7 +275,6 @@ public class ToolbarActions extends JToolBar  {
 
 		Dimension separatorDim = new Dimension(10,5);
 		Dimension separatorBigDim = new Dimension(10,10);
-		add(logonToDBAction);
 		add(openMapperFile);
 		add(openTemplateFileAction);
 		addSeparator(separatorDim);
@@ -262,10 +287,6 @@ public class ToolbarActions extends JToolBar  {
 
 	public QuitAction getQuitAction() {
 		return quitAction;
-	}
-
-	public LogonToDBAction getLogonToDBAction() {
-		return logonToDBAction;
 	}
 
 	public CreateFileAction getCreateFileAction() {
@@ -286,6 +307,10 @@ public class ToolbarActions extends JToolBar  {
 
 	public OpenDataFileAction getOpenDataFileAction() {
 		return openDataFileAction;
+	}
+
+	public OpenMapperFile getOpenMapperFile() {
+		return openMapperFile;
 	}
 
 }
